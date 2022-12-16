@@ -1,5 +1,6 @@
 package com.dev.controllers;
 
+import com.dev.objects.LiveGame;
 import com.dev.objects.User;
 import com.dev.objects.UserObject;
 import com.dev.responses.BasicResponse;
@@ -33,33 +34,39 @@ public class TestController {
     private Persist persist;
 
     @PostConstruct
-    public void init () {
+    public void init() {
     }
 
     @RequestMapping(value = "/check", method = RequestMethod.GET)
-    public String getCheck () {
+    public String getCheck() {
         return "Success from get request";
     }
 
     @RequestMapping(value = "/check", method = RequestMethod.POST)
-    public String postCheck () {
+    public String postCheck() {
         return "Success from post request";
     }
 
+    @RequestMapping(value = "/get-goals", method = RequestMethod.POST)
+    public LiveGame postCheck(String team1, String team2, int team1Goals, int team2Goals) {
+        LiveGame liveGame = new LiveGame(team1, team2, team1Goals, team2Goals);
+        return liveGame;
+    }
+
     @RequestMapping(value = "/get-all-users", method = {RequestMethod.GET, RequestMethod.POST})
-    public List<UserObject> getAllUsers () {
+    public List<UserObject> getAllUsers() {
         List<UserObject> allUsers = persist.getAllUsersH();
         return allUsers;
     }
 
     @RequestMapping(value = "/test", method = {RequestMethod.GET, RequestMethod.POST})
-    public Object test () {
+    public Object test() {
         return new Date().toString();
     }
 
 
     @RequestMapping(value = "/sign-in", method = RequestMethod.POST)
-    public BasicResponse signIn (String username, String password) {
+    public BasicResponse signIn(String username, String password) {
         BasicResponse basicResponse = null;
         String token = createHash(username, password);
         token = persist.getUserByCredsH(username, token);
@@ -78,7 +85,7 @@ public class TestController {
 
 
     @RequestMapping(value = "/create-account", method = {RequestMethod.GET, RequestMethod.POST})
-    public User createAccount (String username, String password) {
+    public User createAccount(String username, String password) {
         User newAccount = null;
         if (utils.validateUsername(username)) {
             if (utils.validatePassword(password)) {
@@ -99,7 +106,7 @@ public class TestController {
     }
 
 
-    public String createHash (String username, String password) {
+    public String createHash(String username, String password) {
         String raw = String.format("%s_%s", username, password);
         String myHash = null;
         try {
@@ -115,7 +122,7 @@ public class TestController {
         return myHash;
     }
 
-    private boolean checkIfUsernameExists (String username) {
+    private boolean checkIfUsernameExists(String username) {
         boolean exists = false;
         for (User user : this.myUsers) {
             if (user.getUsername().equals(username)) {
@@ -128,7 +135,7 @@ public class TestController {
     }
 
 
-    private User getUserByToken (String token) {
+    private User getUserByToken(String token) {
         User matchedUser = null;
         if (token != null) {
             for (User user : this.myUsers) {
@@ -140,8 +147,6 @@ public class TestController {
         }
         return matchedUser;
     }
-
-
 
 
 }

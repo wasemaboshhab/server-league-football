@@ -1,7 +1,7 @@
 
 package com.dev.utils;
 
-import com.dev.objects.Groups;
+import com.dev.objects.Group;
 import com.dev.objects.UserObject;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Component
 public class Persist {
@@ -19,15 +21,13 @@ public class Persist {
     private final SessionFactory sessionFactory;
 
     @Autowired
-    public Persist (SessionFactory sf) {
+    public Persist(SessionFactory sf) {
         this.sessionFactory = sf;
     }
 
 
-
-
     @PostConstruct
-    public void createConnectionToDatabase () {
+    public void createConnectionToDatabase() {
 
         try {
             this.connection = DriverManager.getConnection(
@@ -38,7 +38,6 @@ public class Persist {
             }
 
 
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -46,38 +45,50 @@ public class Persist {
 
     public boolean checkIfTableEmpty() {
         boolean empty = false;
-        List<Groups> groups = sessionFactory.openSession()
-                .createQuery("from Groups").list();
+        List<Group> groups = sessionFactory.openSession()
+                .createQuery("from Group").list();
         if (groups.isEmpty()) {
             empty = true;
         }
         return empty;
     }
 
-    public List<Groups> getAllGroups() {
-        return sessionFactory.openSession().createQuery("from Groups ORDER BY points desc ").list();
+    public List<Group> getAllGroups() {
+        return sessionFactory.openSession().createQuery("from Group ORDER BY points desc ").list();
 
     }
 
     public void initGroups() {
-        Groups team1 = new Groups("barcelona", 40, 0, 30);
-        Groups team2 = new Groups("Real madred", 15, 40, 5);
-        Groups team3 = new Groups("city", 33, 8, 22);
-        Groups team4 = new Groups("Milan", 28, 11, 17);
 
-        sessionFactory.openSession().save(team1);
-        sessionFactory.openSession().save(team2);
-        sessionFactory.openSession().save(team3);
-        sessionFactory.openSession().save(team4);
+        Group[] groupList={new Group("Maccabi-Ashdod", 6, 20, 3, 10, 2),
+                new Group("Hapoel-Afula", 2, 12, 4, 4, 7),
+                new Group("Shaaraiim", 12, 8, 3, 3, 9),
+                new Group("Bnai-Reina", 4, 2, 5, 9, 1),
+                new Group("Kiryat-Gat", 6, 13, 3, 10, 2),
+                new Group("Arayot-Rahat", 5, 14, 5, 8, 2),
+                new Group("Bnai-Ashkelon", 7, 10, 8, 5, 2),
+                new Group("Netivot", 2, 20, 0, 11, 4),
+                new Group("Leviot-Yeruham", 4, 40, 7, 4, 4),
+                new Group("Totahi-Ramle", 2, 15, 5, 5, 5),
+                new Group("Hapoel-Natanya", 33, 33, 1, 0, 14),
+                new Group("Milan", 28, 7, 10, 3, 2)};
 
-    }
 
-    public List<UserObject> getAllUsersH () {
+        for (Group group:groupList) {
+            group.setRatioOfGoals();
+            group.setPoints();
+            sessionFactory.openSession().save(group);
+        }
+}
+
+
+    public List<UserObject> getAllUsersH() {
 
         List<UserObject> userObjectList = sessionFactory.openSession()
                 .createQuery("FROM UserObject ").list();
         return userObjectList;
     }
+
     public void saveUser(UserObject userObject) {
         sessionFactory.openSession()
                 .save(userObject);
@@ -85,7 +96,7 @@ public class Persist {
 
     public boolean usernameAvailableH(String username) {
         boolean available = true;
-        List<UserObject> userObjects =  sessionFactory.openSession()
+        List<UserObject> userObjects = sessionFactory.openSession()
                 .createQuery("from UserObject where username =: username")
                 .setParameter("username", username).list();
 
@@ -108,7 +119,7 @@ public class Persist {
         return userObject;
     }
 
-    public void addUser (String username, String token) {
+    public void addUser(String username, String token) {
         try {
             PreparedStatement preparedStatement =
                     this.connection
@@ -120,13 +131,14 @@ public class Persist {
             throw new RuntimeException(e);
         }
     }
-    public boolean usernameAvailable (String username) {
+
+    public boolean usernameAvailable(String username) {
         boolean available = false;
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(
                     "SELECT id " +
-                    "FROM users " +
-                    "WHERE username = ?");
+                            "FROM users " +
+                            "WHERE username = ?");
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -140,7 +152,7 @@ public class Persist {
         return available;
     }
 
-    public UserObject getUserByToken (String token) {
+    public UserObject getUserByToken(String token) {
         UserObject user1 = null;
         try {
             PreparedStatement preparedStatement = this.connection
