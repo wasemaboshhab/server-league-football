@@ -1,5 +1,6 @@
 package com.dev.controllers;
 
+import com.dev.objects.Group;
 import com.dev.objects.LiveGame;
 import com.dev.objects.User;
 import com.dev.objects.UserObject;
@@ -53,7 +54,13 @@ public class TestController {
         return liveGame;
     }
 
+    @RequestMapping(value = "/get-static-table", method = RequestMethod.GET)
+    public List<Group> getStaticTable() {
+        return persist.getAllGroups();
+    }
+
     @RequestMapping(value = "/get-all-users", method = {RequestMethod.GET, RequestMethod.POST})
+
     public List<UserObject> getAllUsers() {
         List<UserObject> allUsers = persist.getAllUsersH();
         return allUsers;

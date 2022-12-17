@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @Component
 public class Persist {
@@ -34,6 +33,7 @@ public class Persist {
                     "jdbc:mysql://localhost:3306/football_project", "root", "1234");
             System.out.println("Successfully connected to DB");
             if (checkIfTableEmpty()) {
+
                 initGroups();
             }
 
@@ -41,12 +41,14 @@ public class Persist {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        getAllGroups();
+        System.out.println();
     }
 
-    public boolean checkIfTableEmpty() {
+    private boolean checkIfTableEmpty() {
         boolean empty = false;
         List<Group> groups = sessionFactory.openSession()
-                .createQuery("from Group").list();
+                .createQuery("FROM Group").list();
         if (groups.isEmpty()) {
             empty = true;
         }
@@ -54,33 +56,65 @@ public class Persist {
     }
 
     public List<Group> getAllGroups() {
-        return sessionFactory.openSession().createQuery("from Group ORDER BY points desc ").list();
+        // no need order by - because we sort the Table push it in database
+        return sessionFactory.openSession().createQuery("From Group ORDER BY points DESC ").list();
 
     }
 
-    public void initGroups() {
-
-        Group[] groupList={new Group("Maccabi-Ashdod", 6, 20, 3, 10, 2),
-                new Group("Hapoel-Afula", 2, 12, 4, 4, 7),
-                new Group("Shaaraiim", 12, 8, 3, 3, 9),
-                new Group("Bnai-Reina", 4, 2, 5, 9, 1),
-                new Group("Kiryat-Gat", 6, 13, 3, 10, 2),
-                new Group("Arayot-Rahat", 5, 14, 5, 8, 2),
-                new Group("Bnai-Ashkelon", 7, 10, 8, 5, 2),
-                new Group("Netivot", 2, 20, 0, 11, 4),
-                new Group("Leviot-Yeruham", 4, 40, 7, 4, 4),
-                new Group("Totahi-Ramle", 2, 15, 5, 5, 5),
-                new Group("Hapoel-Natanya", 33, 33, 1, 0, 14),
-                new Group("Milan", 28, 7, 10, 3, 2)};
+    private void initGroups() {
+        List<Group> groupList = new ArrayList<>();
+        groupList.add(new Group("Maccabi-Ashdod", 6, 20, 3, 10, 2));
+        groupList.add(new Group("Hapoel-Afula", 2, 12, 4, 4, 7));
+        groupList.add(new Group("Shaaraiim", 12, 8, 3, 3, 9));
+        groupList.add( new Group("Bnai-Reina", 4, 2, 5, 9, 1));
+        groupList.add(new Group("Kiryat-Gat", 6, 13, 3, 10, 2));
+        groupList.add(new Group("Arayot-Rahat", 5, 14, 5, 8, 2));
+        groupList.add(new Group("Bnai-Ashkelon", 7, 10, 8, 5, 2) );
+        groupList.add(new Group("Netivot", 2, 20, 0, 11, 4) );
+        groupList.add(new Group("Leviot-Yeruham", 4, 40, 7, 4, 4) );
+        groupList.add(new Group("Totahi-Ramle", 2, 15, 5, 5, 5) );
+        groupList.add(new Group("Hapoel-Natanya", 33, 33, 1, 0, 14));
+        groupList.add(new Group("Milan", 28, 7, 10, 3, 2));
 
 
         for (Group group:groupList) {
             group.setRatioOfGoals();
             group.setPoints();
-            sessionFactory.openSession().save(group);
         }
+        setPositionAndAddToDatabase(groupList);
+
 }
 
+    private List<Group> setPositionAndAddToDatabase(List<Group> groupList) {
+
+        int positions = 1;
+        List<Group> sortTeamsByPoints = new ArrayList<>();
+
+
+        for (int i = 0; i < groupList.size(); i++) {
+            int indexOfGroupWithMostPoints = 0;
+            int mostPoints = groupList.get(i).getPoints();
+
+            for (int j = 0; j < groupList.size(); j++) {
+
+                if (mostPoints < groupList.get(j).getPoints()) {
+                    mostPoints = groupList.get(j).getPoints();
+                    indexOfGroupWithMostPoints = j;
+                }
+            }
+            groupList.get(indexOfGroupWithMostPoints).setPosition(positions++);
+
+            sortTeamsByPoints.add(groupList.get(indexOfGroupWithMostPoints));
+            groupList.remove(indexOfGroupWithMostPoints);
+            i = 0;
+        }
+        groupList.get(0).setPosition(positions);
+        sortTeamsByPoints.add(groupList.get(0));
+        for (Group group : sortTeamsByPoints) {
+            sessionFactory.openSession().save(group);
+        }
+        return sortTeamsByPoints;
+    }
 
     public List<UserObject> getAllUsersH() {
 
