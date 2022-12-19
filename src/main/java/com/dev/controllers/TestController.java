@@ -59,12 +59,19 @@ public class TestController {
         return persist.getAllGroups();
     }
 
+    @RequestMapping(value = "/get-names-groups", method = RequestMethod.GET)
+    public List<String> getGroupsNames() {
+        return persist.getAllGroupsName();
+    }
     @RequestMapping(value = "/get-all-users", method = {RequestMethod.GET, RequestMethod.POST})
 
     public List<UserObject> getAllUsers() {
         List<UserObject> allUsers = persist.getAllUsersH();
         return allUsers;
     }
+
+
+
 
     @RequestMapping(value = "/test", method = {RequestMethod.GET, RequestMethod.POST})
     public Object test() {

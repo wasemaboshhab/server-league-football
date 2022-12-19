@@ -3,6 +3,7 @@ package com.dev.utils;
 
 import com.dev.objects.Group;
 import com.dev.objects.UserObject;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -61,7 +62,13 @@ public class Persist {
 
     }
 
-    private void initGroups() {
+    public List<String> getAllGroupsName () {
+        List<String> namesGroup= sessionFactory.openSession().createQuery("SELECT name FROM Group").list();
+        return namesGroup;
+    }
+
+
+        private void initGroups() {
         List<Group> groupList = new ArrayList<>();
         groupList.add(new Group("Maccabi-Ashdod", 6, 20, 3, 10, 2));
         groupList.add(new Group("Hapoel-Afula", 2, 12, 4, 4, 7));
