@@ -219,7 +219,6 @@ public class Persist {
 
     public String getUserByCredsH(String username, String token) {
         String response = null;
-
         List<UserObject> userObjectList = sessionFactory.openSession()
                 .createQuery("from UserObject where username =: username and token = : token")
                 .setParameter("username", username).setParameter("token", token).list();
@@ -227,7 +226,6 @@ public class Persist {
             UserObject userObject = userObjectList.get(0);
             response = userObject.getToken();
         }
-
         return response;
     }
 
