@@ -8,7 +8,7 @@ public class Utils {
     public boolean validateUsername (String username) {
         boolean valid = false;
         if (username != null) {
-            if (username.contains("@")) {
+            if (username.contains("")) {
                 valid = true;
             }
         }
@@ -18,7 +18,7 @@ public class Utils {
     public boolean validatePassword (String password) {
         boolean valid = false;
         if (password != null) {
-            if (password.length() >= 8) {
+            if (password.length() >= 6) {
                 valid = true;
             }
         }

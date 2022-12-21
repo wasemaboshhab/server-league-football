@@ -2,12 +2,12 @@ package com.dev.controllers;
 
 import com.dev.objects.Group;
 import com.dev.objects.LiveGame;
-import com.dev.objects.User;
 import com.dev.objects.UserObject;
 import com.dev.responses.BasicResponse;
 import com.dev.responses.SignInReponse;
 import com.dev.utils.Persist;
 import com.dev.utils.Utils;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,7 +17,6 @@ import javax.annotation.PostConstruct;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +24,7 @@ import java.util.List;
 @RestController
 public class TestController {
 
-    private List<User> myUsers = new ArrayList<>();
+    //  private List<UserObject> myUsers = new ArrayList<>();
 
     @Autowired
     public Utils utils;
@@ -71,7 +70,7 @@ public class TestController {
     }
 
 
-
+  //  @RequestMapping(value = "/", method = RequestMethod.POST)
 
     @RequestMapping(value = "/test", method = {RequestMethod.GET, RequestMethod.POST})
     public Object test() {
@@ -83,6 +82,7 @@ public class TestController {
     public BasicResponse signIn(String username, String password) {
         BasicResponse basicResponse = null;
         String token = createHash(username, password);
+        //need to update the token to the table - for successful sign in
         token = persist.getUserByCredsH(username, token);
         if (token == null) {
             if (persist.usernameAvailable(username)) {
@@ -98,14 +98,14 @@ public class TestController {
     }
 
 
-    @RequestMapping(value = "/create-account", method = {RequestMethod.GET, RequestMethod.POST})
-    public User createAccount(String username, String password) {
-        User newAccount = null;
+   @RequestMapping(value = "/create-account", method = {RequestMethod.GET, RequestMethod.POST})
+    public UserObject createAccount(String username, String password) {
+        UserObject newAccount = null;
         if (utils.validateUsername(username)) {
             if (utils.validatePassword(password)) {
                 if (persist.usernameAvailable(username)) {
                     String token = createHash(username, password);
-                    newAccount = new User(username, token);
+                    newAccount = new UserObject(username, token);
                     persist.addUser(username, token);
                 } else {
                     System.out.println("username already exits");
@@ -136,31 +136,9 @@ public class TestController {
         return myHash;
     }
 
-    private boolean checkIfUsernameExists(String username) {
-        boolean exists = false;
-        for (User user : this.myUsers) {
-            if (user.getUsername().equals(username)) {
-                exists = true;
-                break;
-            }
-        }
-
-        return exists;
-    }
 
 
-    private User getUserByToken(String token) {
-        User matchedUser = null;
-        if (token != null) {
-            for (User user : this.myUsers) {
-                if (user.getToken().equals(token)) {
-                    matchedUser = user;
-                    break;
-                }
-            }
-        }
-        return matchedUser;
-    }
+
 
 
 }
