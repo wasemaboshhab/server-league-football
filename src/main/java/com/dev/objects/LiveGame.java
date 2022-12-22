@@ -1,8 +1,5 @@
 package com.dev.objects;
-
-import org.hibernate.annotations.ColumnDefault;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-
+//add to git
 import javax.persistence.*;
 @Entity
 @Table(name = "live_games")
