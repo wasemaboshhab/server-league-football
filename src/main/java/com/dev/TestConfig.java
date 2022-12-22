@@ -1,6 +1,7 @@
 package com.dev;
 
 import com.dev.objects.Group;
+import com.dev.objects.LiveGame;
 import com.dev.objects.UserObject;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -51,6 +52,7 @@ public class TestConfig {
 
         configuration.addAnnotatedClass(UserObject.class);
         configuration.addAnnotatedClass(Group.class);
+        configuration.addAnnotatedClass(LiveGame.class);
 
 
 //        configuration.addAnnotatedClass(NoteObject.class);

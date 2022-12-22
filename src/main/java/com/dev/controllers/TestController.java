@@ -47,11 +47,11 @@ public class TestController {
         return "Success from post request";
     }
 
-    @RequestMapping(value = "/get-goals", method = RequestMethod.POST)
+  /*  @RequestMapping(value = "/get-goals", method = RequestMethod.POST)
     public LiveGame postCheck(String team1, String team2, int team1Goals, int team2Goals) {
         LiveGame liveGame = new LiveGame(team1, team2, team1Goals, team2Goals);
         return liveGame;
-    }
+    }*/
 
     @RequestMapping(value = "/get-static-table", method = RequestMethod.GET)
     public List<Group> getStaticTable() {
@@ -69,20 +69,29 @@ public class TestController {
         return allUsers;
     }
 
-
-  //  @RequestMapping(value = "/", method = RequestMethod.POST)
-
-    @RequestMapping(value = "/test", method = {RequestMethod.GET, RequestMethod.POST})
-    public Object test() {
-        return new Date().toString();
+    @RequestMapping(value = "/add-goals-team1", method = RequestMethod.POST)
+    public int addGoalsTeam1(String team1, int goals){
+        persist.addTeam1Goals(team1,goals);
+        return goals;
     }
 
+    @RequestMapping(value = "/add-goals-team2", method = RequestMethod.POST)
+    public int addGoalsTeam2(String team2, int goals){
+        persist.addTeam2Goals(team2,goals);
+        return goals;
+    }
+
+    @RequestMapping(value = "/save-match", method = RequestMethod.POST)
+    public LiveGame saveMatch(String team1, String team2){
+        LiveGame liveGame = new LiveGame(team1,team2);
+        persist.addLiveGame(team1,team2,0,0);
+        return liveGame;
+    }
 
     @RequestMapping(value = "/sign-in", method = RequestMethod.POST)
     public BasicResponse signIn(String username, String password) {
         BasicResponse basicResponse = null;
         String token = createHash(username, password);
-        //need to update the token to the table - for successful sign in
         token = persist.getUserByCredsH(username, token);
         if (token == null) {
             if (persist.usernameAvailable(username)) {

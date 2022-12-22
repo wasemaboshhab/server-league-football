@@ -1,21 +1,29 @@
 package com.dev.objects;
 
+import org.hibernate.annotations.ColumnDefault;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+
 import javax.persistence.*;
- // not finish
 @Entity
-@Table(name = "live")
+@Table(name = "live_games")
 public class LiveGame {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     int id;
+     @Column
     String team1;
+     @Column
+     int team1Goals;
+     @Column
     String team2;
+     @Column
+     int team2Goals;
 
-     public LiveGame(String team1, String team2, int team1Goals, int team2Goals) {
+     public LiveGame(String team1, String team2) {
          this.team1 = team1;
          this.team2 = team2;
-         this.team1Goals = team1Goals;
-         this.team2Goals = team2Goals;
      }
 
      public LiveGame() {
@@ -61,8 +69,4 @@ public class LiveGame {
      public void setTeam2Goals(int team2Goals) {
          this.team2Goals = team2Goals;
      }
-
-     int team1Goals;
-    int team2Goals;
-
 }

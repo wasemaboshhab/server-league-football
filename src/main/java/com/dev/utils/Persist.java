@@ -2,6 +2,7 @@
 package com.dev.utils;
 
 import com.dev.objects.Group;
+import com.dev.objects.LiveGame;
 import com.dev.objects.UserObject;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -169,6 +170,40 @@ public class Persist {
             preparedStatement.setString(2, token);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addLiveGame (String team1, String team2,int team1Goals,int team2Goals) {
+        try {
+            PreparedStatement preparedStatement =
+                    this.connection.prepareStatement("INSERT INTO live_games (team1, team2,team1Goals, team2Goals) VALUE (?,?,?,?)");
+            preparedStatement.setString(1, team1);
+            preparedStatement.setString(2, team2);
+            preparedStatement.setInt(3,team1Goals);
+            preparedStatement.setInt(4,team2Goals);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addTeam1Goals (String team1, int team1Goals){
+        try {
+            PreparedStatement preparedStatement =
+                    this.connection.prepareStatement("INSERT INTO live_games (team1Goals) VALUE (?) WHERE team1=team1");
+            preparedStatement.setInt(1, team1Goals);
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addTeam2Goals (String team2, int team2Goals){
+        try {
+            PreparedStatement preparedStatement =
+                    this.connection.prepareStatement("INSERT INTO live_games (team2Goals) VALUE (?) WHERE team2=team2");
+            preparedStatement.setInt(1, team2Goals);
+        } catch (SQLException e){
             throw new RuntimeException(e);
         }
     }
