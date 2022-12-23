@@ -23,7 +23,14 @@ public class LiveGame {
          this.team2 = team2;
      }
 
-     public LiveGame() {
+    public LiveGame(String team1, int team1Goals, String team2, int team2Goals) {
+        this.team1 = team1;
+        this.team1Goals = team1Goals;
+        this.team2 = team2;
+        this.team2Goals = team2Goals;
+    }
+
+    public LiveGame() {
 
      }
 

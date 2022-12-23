@@ -76,6 +76,18 @@ public class TestController {
         return goals;
     }
 
+    // new api req update Goals
+    @RequestMapping(value = "/update-team1-goals" , method = RequestMethod.POST)
+    public void updateTeam1Goals(String team , int goals){
+        System.out.println();
+        persist.updateTeam1Goals(team, goals);
+    }
+    @RequestMapping(value = "/update-team2-goals",method = RequestMethod.POST)
+    public int updateTeam2Goals(String team , int goals){
+            persist.updateTeam2Goals(team, goals);
+        return goals;
+        }
+
     @RequestMapping(value = "/add-goals-team2", method = RequestMethod.POST)
     public int addGoalsTeam2(String team2, int goals){
         persist.addTeam2Goals(team2,goals);
@@ -85,9 +97,16 @@ public class TestController {
     @RequestMapping(value = "/save-match", method = RequestMethod.POST)
     public LiveGame saveMatch(String team1, String team2){
         LiveGame liveGame = new LiveGame(team1,team2);
-        persist.addLiveGame(team1,team2,0,0);
+        persist.addLiveGameH(liveGame);
         return liveGame;
     }
+
+//    @RequestMapping(value = "update-match", method = RequestMethod.POST)
+//    public void updateGame( String team1 ,int team1Goals, String team2, int team2Goals) {
+//        LiveGame currentLiveMatch = new LiveGame(team1, team1Goals, team2, team2Goals);
+//        persist.
+//
+//    }
 
     @RequestMapping(value = "/sign-in", method = RequestMethod.POST)
     public BasicResponse signIn(String username, String password) {

@@ -40,6 +40,20 @@ public class Group {
         this.draws = draws;
     }
 
+    public boolean comparePoints(Group team) {
+        return this.points < team.points;
+    }
+
+    public boolean equalsPoints(Group anotherTeam) {
+        return this.points == anotherTeam.points;
+    }
+    public boolean compareGoalsDifference(Group anotherGroup) {
+        return this.ratioOfGoals < anotherGroup.ratioOfGoals;
+    }
+
+    public int lexicographical(Group anotherTeam) {
+        return this.name.compareTo(anotherTeam.name);
+    }
     public int getNumberOfLosses() {
         return numberOfLosses;
     }

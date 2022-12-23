@@ -4,8 +4,10 @@ package com.dev.utils;
 import com.dev.objects.Group;
 import com.dev.objects.LiveGame;
 import com.dev.objects.UserObject;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,13 +42,59 @@ public class Persist {
                 initGroups();
             }
 
+//            addTeam1Goals("Milan",1); doesn't work
+            updateTeam1Goals("ad", 2);
+            updateTeam2Goals("ae", 3);
+
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        getAllGroups();
-        System.out.println();
+
     }
+
+    public void updateTeam1Goals(String team , int updateGoals) {
+
+        List<Integer> idList =  sessionFactory.openSession().createQuery("select id from LiveGame where team1 = : team")
+                .setParameter("team", team).list();
+        int matchId = idList.get(0);
+        System.out.println();
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        tx = session.beginTransaction();
+        LiveGame liveGame = session.get(LiveGame.class, matchId);
+        liveGame.setTeam1Goals(updateGoals);
+        session.update(liveGame);
+        tx.commit();
+    }
+    public void updateTeam2Goals(String team, int updateGoals) {
+        List<Integer> idList =  sessionFactory.openSession().createQuery("select id from LiveGame where team2 = : team")
+                .setParameter("team", team).list();
+        int matchId = idList.get(0);
+        System.out.println();
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        tx = session.beginTransaction();
+        LiveGame liveGame = session.get(LiveGame.class, matchId);
+        liveGame.setTeam2Goals(updateGoals);
+        session.update(liveGame);
+        tx.commit();
+    }
+
+
+
+    //Transaction test
+    public void updateUserName(String username , String token ) {
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+        UserObject userObject = (UserObject) session.get(UserObject.class, username);
+        userObject.setToken(token);
+        session.update(userObject);
+        tx.commit();
+
+    }
+
+
 
     private boolean checkIfTableEmpty() {
         boolean empty = false;
@@ -59,17 +107,15 @@ public class Persist {
     }
 
     public List<Group> getAllGroups() {
-        // no need order by - because we sort the Table push it in database
         return sessionFactory.openSession().createQuery("From Group ORDER BY points DESC ").list();
 
     }
 
     public List<String> getAllGroupsName () {
-        List<String> namesGroup= sessionFactory.openSession().createQuery("SELECT name FROM Group").list();
-        return namesGroup;
+//        return sessionFactory.openSession().createQuery("from Group ").list();
+
+        return (List<String>) sessionFactory.openSession().createQuery("SELECT name FROM Group").list();
     }
-
-
         private void initGroups() {
         List<Group> groupList = new ArrayList<>();
         groupList.add(new Group("Maccabi-Ashdod", 6, 20, 3, 10, 2));
@@ -90,7 +136,8 @@ public class Persist {
             group.setRatioOfGoals();
             group.setPoints();
         }
-        setPositionAndAddToDatabase(groupList);
+        List<Group> groupList1 = setPositionAndAddToDatabase(groupList);
+        System.out.println();
 
 }
 
@@ -98,21 +145,37 @@ public class Persist {
 
         int positions = 1;
         List<Group> sortTeamsByPoints = new ArrayList<>();
-
-
         for (int i = 0; i < groupList.size(); i++) {
             int indexOfGroupWithMostPoints = 0;
             int mostPoints = groupList.get(i).getPoints();
-
-            for (int j = 0; j < groupList.size(); j++) {
-
-                if (mostPoints < groupList.get(j).getPoints()) {
-                    mostPoints = groupList.get(j).getPoints();
+            Group team1 = groupList.get(i);
+            for (int j = i+1; j < groupList.size(); j++) {
+                Group team2 = groupList.get(j);
+                // check if team 1 has more Points than2
+                if (team1.comparePoints(team2)) {
                     indexOfGroupWithMostPoints = j;
+                    break;
+                } else if (team1.equalsPoints(team2)) {
+                    //check if they have the same Points
+
+                        //Check rationGoals (dose t1 have more)
+                        System.out.println();
+                        if (team1.compareGoalsDifference(team2)) {
+                            mostPoints = team2.getPoints();
+                            indexOfGroupWithMostPoints = j;
+
+                        } else if (team1.getRatioOfGoals() == team2.getRatioOfGoals()) {
+                            if (team1.lexicographical(team2) > 0) {      // ab  cd
+                                mostPoints = groupList.get(j).getPoints();
+                                indexOfGroupWithMostPoints = j;
+                            }
+                        }
+
+//                    mostPoints = groupList.get(j).getPoints();
+//                    indexOfGroupWithMostPoints = j;
                 }
             }
             groupList.get(indexOfGroupWithMostPoints).setPosition(positions++);
-
             sortTeamsByPoints.add(groupList.get(indexOfGroupWithMostPoints));
             groupList.remove(indexOfGroupWithMostPoints);
             i = 0;
@@ -175,6 +238,7 @@ public class Persist {
         }
     }
 
+
     public void addLiveGame (String team1, String team2,int team1Goals,int team2Goals) {
         try {
             PreparedStatement preparedStatement =
@@ -187,6 +251,10 @@ public class Persist {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void addLiveGameH (LiveGame liveGame) {
+        sessionFactory.openSession().save(liveGame);
     }
 
     public void addTeam1Goals (String team1, int team1Goals){
