@@ -101,6 +101,11 @@ public class TestController {
         return liveGame;
     }
 
+    @RequestMapping(value = "/get-live-games", method = RequestMethod.GET)
+    public List<LiveGame> getLiveGames() {
+        return persist.getLiveMatches();
+    }
+
 //    @RequestMapping(value = "update-match", method = RequestMethod.POST)
 //    public void updateGame( String team1 ,int team1Goals, String team2, int team2Goals) {
 //        LiveGame currentLiveMatch = new LiveGame(team1, team1Goals, team2, team2Goals);
@@ -110,6 +115,7 @@ public class TestController {
 
     @RequestMapping(value = "/sign-in", method = RequestMethod.POST)
     public BasicResponse signIn(String username, String password) {
+
         BasicResponse basicResponse = null;
         String token = createHash(username, password);
         token = persist.getUserByCredsH(username, token);

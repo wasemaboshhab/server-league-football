@@ -333,6 +333,10 @@ public class Persist {
         return response;
     }
 
+    public List<LiveGame> getLiveMatches() {
+        return sessionFactory.openSession().createQuery("from LiveGame ").list();
+    }
+
     /*public String getUserByCreds (String username, String token) {
         String response = null;
         try {
