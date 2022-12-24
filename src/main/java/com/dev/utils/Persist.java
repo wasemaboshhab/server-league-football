@@ -8,6 +8,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,13 +39,10 @@ public class Persist {
                     "jdbc:mysql://localhost:3306/football_project", "root", "1234");
             System.out.println("Successfully connected to DB");
             if (checkIfTableEmpty()) {
-
                 initGroups();
             }
 
-//            addTeam1Goals("Milan",1); doesn't work
-//            updateTeam1Goals("ad", 2);
-//            updateTeam2Goals("ae", 3);
+
 
 
         } catch (SQLException e) {
@@ -52,6 +50,26 @@ public class Persist {
         }
 
     }
+    public void deleteUser(String usernameToDelete) {
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+
+        session.createQuery("delete from UserObject where username=:username")
+                .setParameter("username", usernameToDelete).executeUpdate();
+        tx.commit();
+        session.close();
+    }
+
+    public void finishMatch(String team1) {
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+        session.createQuery("delete from LiveGame where team1=:team1").setParameter("team1", team1).executeUpdate();
+        tx.commit();
+        session.close();
+
+    }
+
+
 
     public void updateTeam1Goals(String team , int updateGoals) {
 
