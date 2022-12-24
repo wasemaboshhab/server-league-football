@@ -6,5 +6,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "Live_table")
 public class LiveLeagueTable extends Group{
+    private boolean live;
 
 }

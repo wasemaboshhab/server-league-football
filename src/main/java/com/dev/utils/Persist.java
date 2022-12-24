@@ -43,8 +43,8 @@ public class Persist {
             }
 
 //            addTeam1Goals("Milan",1); doesn't work
-            updateTeam1Goals("ad", 2);
-            updateTeam2Goals("ae", 3);
+//            updateTeam1Goals("ad", 2);
+//            updateTeam2Goals("ae", 3);
 
 
         } catch (SQLException e) {
@@ -55,9 +55,8 @@ public class Persist {
 
     public void updateTeam1Goals(String team , int updateGoals) {
 
-        List<Integer> idList =  sessionFactory.openSession().createQuery("select id from LiveGame where team1 = : team")
-                .setParameter("team", team).list();
-        int matchId = idList.get(0);
+        int matchId = (Integer) sessionFactory.openSession().createQuery("select id from LiveGame where team1 = : team")
+                .setParameter("team", team).list().get(0);
         System.out.println();
         Session session = sessionFactory.openSession();
         Transaction tx = null;

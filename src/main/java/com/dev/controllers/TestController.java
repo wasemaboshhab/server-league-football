@@ -70,29 +70,32 @@ public class TestController {
         return allUsers;
     }
 
-    @RequestMapping(value = "/add-goals-team1", method = RequestMethod.POST)
-    public int addGoalsTeam1(String team1, int goals){
-        persist.addTeam1Goals(team1,goals);
-        return goals;
-    }
+//    @RequestMapping(value = "/add-goals-team1", method = RequestMethod.POST)
+//    public int addGoalsTeam1(String team1, int goals){
+//        persist.addTeam1Goals(team1,goals);
+//        return goals;
+//    }
 
     // new api req update Goals
     @RequestMapping(value = "/update-team1-goals" , method = RequestMethod.POST)
-    public void updateTeam1Goals(String team , int goals){
+    public int updateTeam1Goals(String team1 , int team1Goals){
+        team1Goals++;
         System.out.println();
-        persist.updateTeam1Goals(team, goals);
+        persist.updateTeam1Goals(team1, team1Goals);
+        return team1Goals;
     }
     @RequestMapping(value = "/update-team2-goals",method = RequestMethod.POST)
-    public int updateTeam2Goals(String team , int goals){
-            persist.updateTeam2Goals(team, goals);
-        return goals;
+    public int updateTeam2Goals(String team2 , int team2Goals){
+        team2Goals++;
+            persist.updateTeam2Goals(team2, team2Goals);
+        return team2Goals;
         }
 
-    @RequestMapping(value = "/add-goals-team2", method = RequestMethod.POST)
-    public int addGoalsTeam2(String team2, int goals){
-        persist.addTeam2Goals(team2,goals);
-        return goals;
-    }
+//    @RequestMapping(value = "/add-goals-team2", method = RequestMethod.POST)
+//    public int addGoalsTeam2(String team2, int goals){
+//        persist.addTeam2Goals(team2,goals);
+//        return goals;
+//    }
 
     @RequestMapping(value = "/save-match", method = RequestMethod.POST)
     public LiveGame saveMatch(String team1, String team2){
