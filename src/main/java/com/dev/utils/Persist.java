@@ -1,6 +1,5 @@
 
 package com.dev.utils;
-
 import com.dev.objects.Group;
 import com.dev.objects.LiveGame;
 import com.dev.objects.UserObject;
@@ -16,7 +15,6 @@ import javax.annotation.PostConstruct;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-//add to git
 
 @Component
 public class Persist {
@@ -111,7 +109,26 @@ public class Persist {
 
     }
 
-
+    public boolean checkIfTeamIsPlaying(String team1, String team2){
+        boolean isPlaying= false;
+        try {
+            PreparedStatement preparedStatement = this.connection.prepareStatement(
+                    "SELECT id " +
+                            "FROM live_games " +
+                            "WHERE team1 = ? or team2 = ?");
+            preparedStatement.setString(1, team1);
+            preparedStatement.setString(2, team2);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+               isPlaying = false;
+            } else {
+                isPlaying = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isPlaying;
+    }
 
     private boolean checkIfTableEmpty() {
         boolean empty = false;

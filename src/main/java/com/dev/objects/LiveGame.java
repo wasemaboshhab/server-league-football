@@ -1,6 +1,6 @@
 package com.dev.objects;
-//add to git
 import javax.persistence.*;
+
 @Entity
 @Table(name = "live_games")
 public class LiveGame {

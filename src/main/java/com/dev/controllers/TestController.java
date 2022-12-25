@@ -47,12 +47,6 @@ public class TestController {
         return "Success from post request";
     }
 
-  /*  @RequestMapping(value = "/get-goals", method = RequestMethod.POST)
-    public LiveGame postCheck(String team1, String team2, int team1Goals, int team2Goals) {
-        LiveGame liveGame = new LiveGame(team1, team2, team1Goals, team2Goals);
-        return liveGame;
-    }*/
-
     @RequestMapping(value = "/get-static-table", method = RequestMethod.GET)
     public List<Group> getStaticTable() {
         return persist.getAllGroups();
@@ -69,12 +63,6 @@ public class TestController {
         return allUsers;
     }
 
-//    @RequestMapping(value = "/add-goals-team1", method = RequestMethod.POST)
-//    public int addGoalsTeam1(String team1, int goals){
-//        persist.addTeam1Goals(team1,goals);
-//        return goals;
-//    }
-
     // new api req update Goals
     @RequestMapping(value = "/update-team1-goals" , method = RequestMethod.POST)
     public int updateTeam1Goals(String team1 , int team1Goals){
@@ -90,17 +78,18 @@ public class TestController {
         return team2Goals;
         }
 
-//    @RequestMapping(value = "/add-goals-team2", method = RequestMethod.POST)
-//    public int addGoalsTeam2(String team2, int goals){
-//        persist.addTeam2Goals(team2,goals);
-//        return goals;
-//    }
-
     @RequestMapping(value = "/save-match", method = RequestMethod.POST)
-    public LiveGame saveMatch(String team1, String team2){
-        LiveGame liveGame = new LiveGame(team1,team2);
-        persist.addLiveGameH(liveGame);
-        return liveGame;
+    public BasicResponse saveMatch(String team1, String team2){
+        BasicResponse basicResponse = null;
+        if(persist.checkIfTeamIsPlaying(team1,team2)) {
+            LiveGame liveGame = new LiveGame(team1, team2);
+            persist.addLiveGameH(liveGame);
+            basicResponse = new BasicResponse(true,null);
+            return basicResponse ;
+        } else {
+            basicResponse = new BasicResponse(false, 1);
+            return basicResponse;
+        }
     }
 
     @RequestMapping(value = "/get-live-games", method = RequestMethod.GET)
@@ -108,16 +97,8 @@ public class TestController {
         return persist.getLiveMatches();
     }
 
-//    @RequestMapping(value = "update-match", method = RequestMethod.POST)
-//    public void updateGame( String team1 ,int team1Goals, String team2, int team2Goals) {
-//        LiveGame currentLiveMatch = new LiveGame(team1, team1Goals, team2, team2Goals);
-//        persist.
-//
-//    }
-
     @RequestMapping(value = "/sign-in", method = RequestMethod.POST)
     public BasicResponse signIn(String username, String password) {
-
         BasicResponse basicResponse = null;
         String token = createHash(username, password);
         token = persist.getUserByCredsH(username, token);

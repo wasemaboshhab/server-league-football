@@ -1,7 +1,5 @@
 package com.dev.objects;
-
 import javax.persistence.*;
-
 
 @Entity
 @Table(name = "static_table")
